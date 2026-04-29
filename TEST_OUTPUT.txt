@@ -1,0 +1,500 @@
+{
+  "session_id": "demo-001",
+  "suspected_diagnosis": [
+    "疑似抑郁障碍",
+    "焦虑症状显著"
+  ],
+  "risk_level": "high",
+  "risk_types": [
+    "suicide_or_self_harm"
+  ],
+  "evidence_chain": [
+    "症状线索：不想活、情绪低落、没兴趣、睡不着",
+    "PHQ-9达到中度及以上阈值，需重点分析兴趣减退、睡眠、精力和自伤相关条目。",
+    "GAD-7达到中度及以上阈值，需结合担忧、紧张、坐立不安等症状鉴别焦虑共病。",
+    "DSM/ICD知识提示：抑郁评估应关注持续心境低落、兴趣减退、睡眠/食欲改变、精力下降、自责、自伤意念及功能损害。",
+    "知识提示：焦虑需与抑郁共病、躯体疾病、物质/药物因素鉴别。",
+    "抑郁障碍 vs 双相障碍：需追问既往躁狂/轻躁狂发作。",
+    "抑郁障碍 vs 焦虑障碍：需区分核心低落/兴趣减退与过度担忧。"
+  ],
+  "recommendations": [
+    "当前存在高危风险提示，请优先进行安全干预和线下就医。",
+    "建议由精神科/心理科专业人员进一步评估。",
+    "建议补充既往发作史、家族史、用药史、功能损害和持续时间。"
+  ],
+  "safety_message": "本系统输出为精神健康辅助筛查建议，不构成医学确诊。；检测到高危风险表达：建议立即联系当地急救/危机干预热线，或尽快前往医院精神科/急诊，并联系可信任亲友陪伴。",
+  "structured_report": {
+    "case": {
+      "symptoms": [
+        "不想活",
+        "情绪低落",
+        "没兴趣",
+        "睡不着"
+      ],
+      "duration": "2个月",
+      "severity": "moderate",
+      "functional_impairment": "需进一步追问"
+    },
+    "scales": {
+      "PHQ9": {
+        "score": 18,
+        "level": "moderately_severe"
+      },
+      "GAD7": {
+        "score": 11,
+        "level": "moderate"
+      },
+      "granular_items": [
+        "PHQ-9达到中度及以上阈值，需重点分析兴趣减退、睡眠、精力和自伤相关条目。",
+        "GAD-7达到中度及以上阈值，需结合担忧、紧张、坐立不安等症状鉴别焦虑共病。"
+      ]
+    },
+    "moodangels": {
+      "hypotheses": [
+        "疑似抑郁障碍",
+        "焦虑症状显著"
+      ],
+      "angel_r": {
+        "agent": "Angel.R",
+        "view": "不参考历史案例，仅基于病历+量表形成假设",
+        "hypotheses": [
+          "疑似抑郁障碍",
+          "焦虑症状显著"
+        ]
+      },
+      "angel_d": {
+        "agent": "Angel.D",
+        "view": "展示/匹配相似病例信号",
+        "similar_case_signal": [
+          "不想活",
+          "情绪低落",
+          "没兴趣",
+          "睡不着"
+        ]
+      },
+      "angel_c": {
+        "agent": "Angel.C",
+        "view": "分析相似病例与当前个案异同",
+        "difference": "需继续追问躁狂史、精神病性症状、功能损害。"
+      },
+      "debate": {
+        "positive": "支持存在需进一步评估的精神健康风险。",
+        "negative": "当前信息来自自述，不能确诊。"
+      },
+      "judge": {
+        "decision": [
+          "疑似抑郁障碍",
+          "焦虑症状显著"
+        ],
+        "confidence": 0.75
+      },
+      "legacy_fallback_error": ""
+    },
+    "external_models": {
+      "mentalbert": {
+        "model": "MentalBERT-compatible",
+        "risk_score": 0.5,
+        "label": "high",
+        "evidence": [
+          "不想活"
+        ]
+      },
+      "neurocheck": {
+        "model": "NeuroCheck-compatible",
+        "cognitive_neuro_risk": "low",
+        "evidence": []
+      },
+      "consistency": "external signals reviewed"
+    },
+    "knowledge": {
+      "rag_evidence": [
+        "DSM/ICD知识提示：抑郁评估应关注持续心境低落、兴趣减退、睡眠/食欲改变、精力下降、自责、自伤意念及功能损害。",
+        "知识提示：焦虑需与抑郁共病、躯体疾病、物质/药物因素鉴别。"
+      ],
+      "kg_nodes": [
+        "疑似抑郁障碍",
+        "焦虑症状显著"
+      ],
+      "rules_applied": [
+        "non-diagnostic-output",
+        "risk-first"
+      ]
+    },
+    "differential": {
+      "differential_items": [
+        "抑郁障碍 vs 双相障碍：需追问既往躁狂/轻躁狂发作。",
+        "抑郁障碍 vs 焦虑障碍：需区分核心低落/兴趣减退与过度担忧。"
+      ]
+    },
+    "risk": {
+      "risk_level": "high",
+      "risk_types": [
+        "suicide_or_self_harm"
+      ],
+      "matched_rules": {
+        "symptom_hits": [
+          "不想活",
+          "情绪低落",
+          "没兴趣",
+          "睡不着"
+        ]
+      }
+    },
+    "validation": {
+      "allowed": true,
+      "safety_messages": [
+        "本系统输出为精神健康辅助筛查建议，不构成医学确诊。",
+        "检测到高危风险表达：建议立即联系当地急救/危机干预热线，或尽快前往医院精神科/急诊，并联系可信任亲友陪伴。"
+      ],
+      "prohibited_terms": [
+        "确诊",
+        "治愈保证",
+        "替代医生"
+      ]
+    }
+  },
+  "agent_traces": [
+    {
+      "agent": "IntakeAgent",
+      "summary": "完成患者输入接收与初步追问判断",
+      "output": {
+        "raw_text": "最近2个月情绪低落，睡不着，对事情没兴趣，有时觉得不想活。",
+        "chief_complaint": "最近2个月情绪低落，睡不着，对事情没兴趣，有时觉得不想活。",
+        "age": 22,
+        "gender": "female",
+        "need_followup": false
+      }
+    },
+    {
+      "agent": "StructuringAgent",
+      "summary": "完成对话到结构化病历转换",
+      "output": {
+        "symptoms": [
+          "不想活",
+          "情绪低落",
+          "没兴趣",
+          "睡不着"
+        ],
+        "duration": "2个月",
+        "severity": "moderate",
+        "functional_impairment": "需进一步追问"
+      }
+    },
+    {
+      "agent": "ScaleAssessmentAgent",
+      "summary": "完成PHQ-9/GAD-7量表评分和题目级提示",
+      "output": {
+        "PHQ9": {
+          "score": 18,
+          "level": "moderately_severe"
+        },
+        "GAD7": {
+          "score": 11,
+          "level": "moderate"
+        },
+        "granular_items": [
+          "PHQ-9达到中度及以上阈值，需重点分析兴趣减退、睡眠、精力和自伤相关条目。",
+          "GAD-7达到中度及以上阈值，需结合担忧、紧张、坐立不安等症状鉴别焦虑共病。"
+        ]
+      }
+    },
+    {
+      "agent": "MoodAngelsDiagnosisAgent",
+      "summary": "完成MoodAngels兼容诊断推理、Angel.R/D/C与Judge裁决",
+      "output": {
+        "hypotheses": [
+          "疑似抑郁障碍",
+          "焦虑症状显著"
+        ],
+        "angel_r": {
+          "agent": "Angel.R",
+          "view": "不参考历史案例，仅基于病历+量表形成假设",
+          "hypotheses": [
+            "疑似抑郁障碍",
+            "焦虑症状显著"
+          ]
+        },
+        "angel_d": {
+          "agent": "Angel.D",
+          "view": "展示/匹配相似病例信号",
+          "similar_case_signal": [
+            "不想活",
+            "情绪低落",
+            "没兴趣",
+            "睡不着"
+          ]
+        },
+        "angel_c": {
+          "agent": "Angel.C",
+          "view": "分析相似病例与当前个案异同",
+          "difference": "需继续追问躁狂史、精神病性症状、功能损害。"
+        },
+        "debate": {
+          "positive": "支持存在需进一步评估的精神健康风险。",
+          "negative": "当前信息来自自述，不能确诊。"
+        },
+        "judge": {
+          "decision": [
+            "疑似抑郁障碍",
+            "焦虑症状显著"
+          ],
+          "confidence": 0.75
+        },
+        "legacy_fallback_error": ""
+      }
+    },
+    {
+      "agent": "ModelVerificationAgent",
+      "summary": "完成MentalBERT/NeuroCheck兼容外部模型验证",
+      "output": {
+        "mentalbert": {
+          "model": "MentalBERT-compatible",
+          "risk_score": 0.5,
+          "label": "high",
+          "evidence": [
+            "不想活"
+          ]
+        },
+        "neurocheck": {
+          "model": "NeuroCheck-compatible",
+          "cognitive_neuro_risk": "low",
+          "evidence": []
+        },
+        "consistency": "external signals reviewed"
+      }
+    },
+    {
+      "agent": "KnowledgeAgent",
+      "summary": "完成DSM/ICD RAG、知识图谱与规则证据补充",
+      "output": {
+        "rag_evidence": [
+          "DSM/ICD知识提示：抑郁评估应关注持续心境低落、兴趣减退、睡眠/食欲改变、精力下降、自责、自伤意念及功能损害。",
+          "知识提示：焦虑需与抑郁共病、躯体疾病、物质/药物因素鉴别。"
+        ],
+        "kg_nodes": [
+          "疑似抑郁障碍",
+          "焦虑症状显著"
+        ],
+        "rules_applied": [
+          "non-diagnostic-output",
+          "risk-first"
+        ]
+      }
+    },
+    {
+      "agent": "DifferentialDiagnosisAgent",
+      "summary": "完成鉴别诊断提示",
+      "output": {
+        "differential_items": [
+          "抑郁障碍 vs 双相障碍：需追问既往躁狂/轻躁狂发作。",
+          "抑郁障碍 vs 焦虑障碍：需区分核心低落/兴趣减退与过度担忧。"
+        ]
+      }
+    },
+    {
+      "agent": "RiskAssessmentAgent",
+      "summary": "完成自杀/自伤/躁狂/精神病性风险分级",
+      "output": {
+        "risk_level": "high",
+        "risk_types": [
+          "suicide_or_self_harm"
+        ],
+        "matched_rules": {
+          "symptom_hits": [
+            "不想活",
+            "情绪低落",
+            "没兴趣",
+            "睡不着"
+          ]
+        }
+      }
+    },
+    {
+      "agent": "ValidatorAgent",
+      "summary": "完成医疗安全校验和合规输出控制",
+      "output": {
+        "allowed": true,
+        "safety_messages": [
+          "本系统输出为精神健康辅助筛查建议，不构成医学确诊。",
+          "检测到高危风险表达：建议立即联系当地急救/危机干预热线，或尽快前往医院精神科/急诊，并联系可信任亲友陪伴。"
+        ],
+        "prohibited_terms": [
+          "确诊",
+          "治愈保证",
+          "替代医生"
+        ]
+      }
+    },
+    {
+      "agent": "ReportAgent",
+      "summary": "完成结构化辅助诊断报告生成",
+      "output": {
+        "suspected_diagnosis": [
+          "疑似抑郁障碍",
+          "焦虑症状显著"
+        ],
+        "risk_level": "high",
+        "risk_types": [
+          "suicide_or_self_harm"
+        ],
+        "evidence_chain": [
+          "症状线索：不想活、情绪低落、没兴趣、睡不着",
+          "PHQ-9达到中度及以上阈值，需重点分析兴趣减退、睡眠、精力和自伤相关条目。",
+          "GAD-7达到中度及以上阈值，需结合担忧、紧张、坐立不安等症状鉴别焦虑共病。",
+          "DSM/ICD知识提示：抑郁评估应关注持续心境低落、兴趣减退、睡眠/食欲改变、精力下降、自责、自伤意念及功能损害。",
+          "知识提示：焦虑需与抑郁共病、躯体疾病、物质/药物因素鉴别。",
+          "抑郁障碍 vs 双相障碍：需追问既往躁狂/轻躁狂发作。",
+          "抑郁障碍 vs 焦虑障碍：需区分核心低落/兴趣减退与过度担忧。"
+        ],
+        "recommendations": [
+          "当前存在高危风险提示，请优先进行安全干预和线下就医。",
+          "建议由精神科/心理科专业人员进一步评估。",
+          "建议补充既往发作史、家族史、用药史、功能损害和持续时间。"
+        ],
+        "safety_message": "本系统输出为精神健康辅助筛查建议，不构成医学确诊。；检测到高危风险表达：建议立即联系当地急救/危机干预热线，或尽快前往医院精神科/急诊，并联系可信任亲友陪伴。",
+        "structured_report": {
+          "case": {
+            "symptoms": [
+              "不想活",
+              "情绪低落",
+              "没兴趣",
+              "睡不着"
+            ],
+            "duration": "2个月",
+            "severity": "moderate",
+            "functional_impairment": "需进一步追问"
+          },
+          "scales": {
+            "PHQ9": {
+              "score": 18,
+              "level": "moderately_severe"
+            },
+            "GAD7": {
+              "score": 11,
+              "level": "moderate"
+            },
+            "granular_items": [
+              "PHQ-9达到中度及以上阈值，需重点分析兴趣减退、睡眠、精力和自伤相关条目。",
+              "GAD-7达到中度及以上阈值，需结合担忧、紧张、坐立不安等症状鉴别焦虑共病。"
+            ]
+          },
+          "moodangels": {
+            "hypotheses": [
+              "疑似抑郁障碍",
+              "焦虑症状显著"
+            ],
+            "angel_r": {
+              "agent": "Angel.R",
+              "view": "不参考历史案例，仅基于病历+量表形成假设",
+              "hypotheses": [
+                "疑似抑郁障碍",
+                "焦虑症状显著"
+              ]
+            },
+            "angel_d": {
+              "agent": "Angel.D",
+              "view": "展示/匹配相似病例信号",
+              "similar_case_signal": [
+                "不想活",
+                "情绪低落",
+                "没兴趣",
+                "睡不着"
+              ]
+            },
+            "angel_c": {
+              "agent": "Angel.C",
+              "view": "分析相似病例与当前个案异同",
+              "difference": "需继续追问躁狂史、精神病性症状、功能损害。"
+            },
+            "debate": {
+              "positive": "支持存在需进一步评估的精神健康风险。",
+              "negative": "当前信息来自自述，不能确诊。"
+            },
+            "judge": {
+              "decision": [
+                "疑似抑郁障碍",
+                "焦虑症状显著"
+              ],
+              "confidence": 0.75
+            },
+            "legacy_fallback_error": ""
+          },
+          "external_models": {
+            "mentalbert": {
+              "model": "MentalBERT-compatible",
+              "risk_score": 0.5,
+              "label": "high",
+              "evidence": [
+                "不想活"
+              ]
+            },
+            "neurocheck": {
+              "model": "NeuroCheck-compatible",
+              "cognitive_neuro_risk": "low",
+              "evidence": []
+            },
+            "consistency": "external signals reviewed"
+          },
+          "knowledge": {
+            "rag_evidence": [
+              "DSM/ICD知识提示：抑郁评估应关注持续心境低落、兴趣减退、睡眠/食欲改变、精力下降、自责、自伤意念及功能损害。",
+              "知识提示：焦虑需与抑郁共病、躯体疾病、物质/药物因素鉴别。"
+            ],
+            "kg_nodes": [
+              "疑似抑郁障碍",
+              "焦虑症状显著"
+            ],
+            "rules_applied": [
+              "non-diagnostic-output",
+              "risk-first"
+            ]
+          },
+          "differential": {
+            "differential_items": [
+              "抑郁障碍 vs 双相障碍：需追问既往躁狂/轻躁狂发作。",
+              "抑郁障碍 vs 焦虑障碍：需区分核心低落/兴趣减退与过度担忧。"
+            ]
+          },
+          "risk": {
+            "risk_level": "high",
+            "risk_types": [
+              "suicide_or_self_harm"
+            ],
+            "matched_rules": {
+              "symptom_hits": [
+                "不想活",
+                "情绪低落",
+                "没兴趣",
+                "睡不着"
+              ]
+            }
+          },
+          "validation": {
+            "allowed": true,
+            "safety_messages": [
+              "本系统输出为精神健康辅助筛查建议，不构成医学确诊。",
+              "检测到高危风险表达：建议立即联系当地急救/危机干预热线，或尽快前往医院精神科/急诊，并联系可信任亲友陪伴。"
+            ],
+            "prohibited_terms": [
+              "确诊",
+              "治愈保证",
+              "替代医生"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+
+STDERR:
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.vJDWZqkmKn/artifact_tool_v2-2.6.11/presentation_artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.vJDWZqkmKn/artifact_tool_v2-2.6.11/presentation_artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.vJDWZqkmKn/artifact_tool_v2-2.6.11/presentation_artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.vJDWZqkmKn/artifact_tool_v2-2.6.11/presentation_artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.vJDWZqkmKn/artifact_tool_v2-2.6.11/presentation_artifact_tool/generated/interface/models.py", line 35986, in hydrate_crdt_from_proto
+  File "/tmp/tmp.vJDWZqkmKn/artifact_tool_v2-2.6.11/presentation_artifact_tool/rpc/remote.py", line 747, in __call__
+  File "/tmp/tmp.vJDWZqkmKn/artifact_tool_v2-2.6.11/presentation_artifact_tool/rpc/client.py", line 150, in call
+presentation_artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.

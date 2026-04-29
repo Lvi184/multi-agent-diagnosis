@@ -1,0 +1,3 @@
+# 多Agent系统需求文档
+
+系统由 IntakeAgent、StructuringAgent、ScaleAssessmentAgent、MoodAngelsDiagnosisAgent、ModelVerificationAgent、KnowledgeAgent、DifferentialDiagnosisAgent、RiskAssessmentAgent、ValidatorAgent、ReportAgent 组成。目标是完成精神健康辅助筛查、风险识别、证据链生成和安全合规输出。

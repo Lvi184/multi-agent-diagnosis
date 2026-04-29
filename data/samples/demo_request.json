@@ -1,0 +1,10 @@
+{
+  "session_id": "demo-001",
+  "age": 22,
+  "gender": "female",
+  "text": "最近2个月情绪低落，睡不着，对事情没兴趣，有时觉得不想活。",
+  "scale_answers": {
+    "PHQ9": 18,
+    "GAD7": 11
+  }
+}
