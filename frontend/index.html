@@ -3,229 +3,363 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MoodAngels-LangGraph 引导式多轮对话</title>
+  <title>AI 心理健康筛查系统</title>
   <style>
-    :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1f2937; background: #f4f7fb; }
+    :root { font-family: system-ui, -apple-system, sans-serif; color: #1f2937; background: #f4f7fb; }
     body { margin: 0; }
-    .layout { max-width: 1100px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; }
+    .layout { max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; }
     .card { background: white; border-radius: 18px; box-shadow: 0 12px 32px rgba(15,23,42,.08); overflow: hidden; }
-    .header { padding: 18px 22px; border-bottom: 1px solid #e5e7eb; }
+    .header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
     .header h1 { font-size: 20px; margin: 0; }
     .sub { margin-top: 6px; color: #6b7280; font-size: 13px; }
-    .mode-badge { display: inline-block; padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-left: 10px; }
+    .mode-badge { padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
     .mode-guided { background: #dbeafe; color: #1d4ed8; }
-    .mode-quick { background: #dcfce7; color: #166534; }
+    
+    /* 聊天区域 */
     .chat { height: 520px; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
     .msg { max-width: 82%; padding: 12px 14px; border-radius: 16px; line-height: 1.55; white-space: pre-wrap; }
     .user { align-self: flex-end; background: #2563eb; color: white; border-bottom-right-radius: 4px; }
     .bot { align-self: flex-start; background: #eef2ff; border-bottom-left-radius: 4px; }
-    .input { border-top: 1px solid #e5e7eb; padding: 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .msg-system { background: #fef3c7; color: #92400e; text-align: center; font-size: 13px; padding: 8px; }
+    
+    /* 输入区域 */
+    .input-area { border-top: 1px solid #e5e7eb; padding: 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px; }
     textarea { resize: vertical; min-height: 58px; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px; font-size: 14px; }
     button { border: 0; background: #111827; color: white; padding: 0 18px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-    button:disabled { opacity: .55; cursor: not-allowed; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    button.primary { background: #2563eb; }
+    
+    /* 侧边栏 */
     .side { padding: 18px; display: grid; gap: 12px; }
-    label { font-size: 13px; color: #374151; display: grid; gap: 6px; }
-    input, select { border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px; }
-    pre { white-space: pre-wrap; word-break: break-word; background: #0f172a; color: #d1d5db; border-radius: 14px; padding: 14px; max-height: 380px; overflow: auto; font-size: 12px; }
     .warn { color: #991b1b; background: #fee2e2; padding: 10px; border-radius: 12px; font-size: 13px; }
-    .info { color: #1e40af; background: #dbeafe; padding: 10px; border-radius: 12px; font-size: 13px; }
-    .collected { background: #f8fafc; border-radius: 12px; padding: 12px; font-size: 13px; }
-    .collected h4 { margin: 0 0 8px 0; color: #475569; }
-    .collected-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #e2e8f0; }
-    .collected-item:last-child { border-bottom: none; }
     .status { text-align: center; padding: 8px; border-radius: 10px; font-size: 13px; font-weight: 600; }
     .status-collecting { background: #fef3c7; color: #92400e; }
-    .status-diagnosing { background: #dbeafe; color: #1e40af; }
+    .status-diagnosing { background: #dbeafe; color: #1d4ed8; }
     .status-completed { background: #dcfce7; color: #166534; }
-    .btn-secondary { background: #f1f5f9; color: #334155; }
-    .btn-group { display: flex; gap: 8px; }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; padding: 12px; } .chat { height: 440px; } }
+    
+    /* 收集的信息展示 */
+    .collected-box { background: #f8fafc; border-radius: 12px; padding: 12px; font-size: 13px; }
+    .collected-box h4 { margin: 0 0 10px 0; color: #475569; }
+    .collected-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0; }
+    .collected-item:last-child { border-bottom: none; }
+    .collected-label { color: #64748b; }
+    .collected-value { font-weight: 600; color: #1e293b; text-align: right; max-width: 60%; word-wrap: break-word; }
+    
+    /* 量表分数展示 */
+    .score-high { color: #dc2626; }
+    .score-medium { color: #f59e0b; }
+    .score-normal { color: #10b981; }
+    
+    /* 诊断结果 */
+    pre { white-space: pre-wrap; word-break: break-word; background: #0f172a; color: #d1d5db; border-radius: 14px; padding: 14px; max-height: 420px; overflow: auto; font-size: 12px; }
+    
+    /* 顶部操作栏 */
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .btn-secondary { background: #f1f5f9; color: #374151; padding: 6px 12px; font-size: 12px; }
+    
+    /* 登录弹窗 */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.show { display: flex; }
+    .modal-content { background: white; padding: 24px; border-radius: 18px; width: 360px; }
+    .modal-content h3 { margin-top: 0; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .form-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .modal-actions button { flex: 1; padding: 10px; }
+    
+    @media (max-width: 900px) { 
+      .layout { grid-template-columns: 1fr; padding: 12px; }
+      .chat { height: 440px; }
+    }
   </style>
 </head>
 <body>
   <div class="layout">
+    <!-- 左侧聊天窗口 -->
     <section class="card">
       <div class="header">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center;">
-            <h1>MoodAngels-LangGraph</h1>
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h1>AI 心理健康筛查</h1>
             <span id="modeBadge" class="mode-badge mode-guided">引导式评估</span>
           </div>
-          <button class="btn-secondary" onclick="resetSession()" style="font-size: 12px; padding: 6px 12px;">重置会话</button>
+          <div class="sub">AI 心理健康筛查系统 - 三步完成评估</div>
         </div>
-        <div class="sub" id="flowDesc">
-          ① 对话引导 → ② 数据标准化 → ③ 量表评估 → ④ 多Agent诊断 → ⑤ 生成报告
+        <div class="top-actions">
+          <button id="btnReset" class="btn-secondary" onclick="resetSession()">🔄 新会话</button>
+          <button class="btn-secondary" onclick="window.location.href='/history.html'">📋 历史记录</button>
+          <button id="btnLogin" class="btn-secondary" onclick="showLoginModal()">👤 登录</button>
         </div>
       </div>
       <div id="chat" class="chat"></div>
-      <div class="input">
+      <div class="input-area">
         <textarea id="message" placeholder="请描述您的情况..."></textarea>
-        <div class="btn-group">
-          <button id="send" onclick="sendMessage()">发送</button>
-        </div>
+        <button id="send" class="primary" onclick="sendMessage()">发送</button>
       </div>
     </section>
 
+    <!-- 右侧信息面板 -->
     <aside class="card side">
-      <div class="warn">⚠️ 安全声明：本系统仅用于科研/教学原型和辅助筛查演示，不构成医学确诊或治疗建议。高危风险请立即线下求助。</div>
+      <div class="warn">⚠️ 安全声明：本系统仅供筛查参考，不构成医学诊断。如有需要，请前往正规医院精神科/心理科就诊。</div>
       
+      <!-- 当前状态 -->
       <div id="statusBox" class="status status-collecting">
         📋 信息采集中
       </div>
-
-      <div class="collected">
+      
+      <!-- 已收集的信息 -->
+      <div class="collected-box">
         <h4>📊 已收集信息</h4>
         <div id="collectedInfo">
-          <div class="collected-item"><span>症状</span><span>-</span></div>
-          <div class="collected-item"><span>持续时间</span><span>-</span></div>
-          <div class="collected-item"><span>既往史</span><span>-</span></div>
-          <div class="collected-item"><span>用药史</span><span>-</span></div>
-          <div class="collected-item"><span>PHQ-9 抑郁量表</span><span>-</span></div>
-          <div class="collected-item"><span>GAD-7 焦虑量表</span><span>-</span></div>
+          <div class="collected-item"><span class="collected-label">状态</span><span class="collected-value">请开始对话</span></div>
         </div>
       </div>
-
-      <div>
-        <label>Session ID<input id="session" value="web-demo" /></label>
-        <label>年龄<input id="age" type="number" value="" placeholder="选填" /></label>
-        <label>性别
-          <select id="gender">
-            <option value="">请选择</option>
-            <option value="female">女</option>
-            <option value="male">男</option>
-            <option value="other">其他</option>
-          </select>
-        </label>
+      
+      <!-- 用户信息 -->
+      <div class="collected-box">
+        <h4>👤 用户信息</h4>
+        <div class="collected-item">
+          <span class="collected-label">Session ID</span>
+          <span class="collected-value"><input type="text" id="session" value="web-demo-v2" style="width: 120px; border: none; background: transparent; text-align: right; font-weight: 600; font-family: inherit;"></span>
+        </div>
+        <div class="collected-item">
+          <span class="collected-label">年龄</span>
+          <span class="collected-value"><input type="number" id="age" placeholder="选填" style="width: 80px; border: none; background: transparent; text-align: right; font-weight: 600; font-family: inherit;"></span>
+        </div>
+        <div class="collected-item">
+          <span class="collected-label">性别</span>
+          <span class="collected-value">
+            <select id="gender" style="border: none; background: transparent; text-align: right; font-weight: 600; font-family: inherit;">
+              <option value="">请选择</option>
+              <option value="female">女</option>
+              <option value="male">男</option>
+              <option value="other">其他</option>
+            </select>
+          </span>
+        </div>
       </div>
-
-      <div class="info">
-        💡 <strong>使用提示：</strong><br/>
-        系统会主动引导您完成信息采集，无需手动填写量表。回答问题即可，信息收集完成后自动执行完整诊断。
-      </div>
-
+      
+      <!-- 诊断结果 -->
       <div>
-        <h4 style="margin: 10px 0 8px 0; font-size: 14px;">诊断结果</h4>
+        <h4 style="margin: 10px 0 8px 0; font-size: 14px;">📋 诊断结果</h4>
         <pre id="out">等待信息收集完成...</pre>
       </div>
     </aside>
   </div>
 
-<script>
-const chat = document.getElementById('chat');
-let history = [];
-let isDiagnosing = false;
+  <!-- 登录弹窗 -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h3>登录 / 注册</h3>
+      <div class="form-group">
+        <label>用户名</label>
+        <input type="text" id="loginUsername" placeholder="请输入用户名">
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="password" id="loginPassword" placeholder="请输入密码">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeLoginModal()">取消</button>
+        <button class="primary" onclick="doLogin()">登录</button>
+        <button class="primary" onclick="doRegister()">注册</button>
+      </div>
+    </div>
+  </div>
 
-function addMsg(text, cls) {
+<script>
+const API_BASE = '/api/v1';
+let chatHistory = [];
+let isDiagnosing = false;
+let accessToken = localStorage.getItem('access_token');
+let currentSessionId = localStorage.getItem('session_id') || 'web-demo-v2-' + Date.now();
+
+// 初始化
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('session').value = currentSessionId;
+  
+  // 如果已有 token，更新按钮状态
+  if (accessToken) {
+    document.getElementById('btnLogin').textContent = '✅ 已登录';
+  }
+  
+  // 页面加载后直接显示引导语（兜底方案）
+  const welcomeMsg = '你好！我是心理健康助手。愿意跟我说说你最近的心情怎么样？';
+  addMsg(welcomeMsg, 'bot');
+  chatHistory.push(welcomeMsg);
+  
+  // 回车发送
+  document.getElementById('message').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+});
+
+// 消息显示
+function addMsg(text, type) {
+  const chat = document.getElementById('chat');
   const div = document.createElement('div');
-  div.className = 'msg ' + cls;
+  div.className = 'msg ' + type;
   div.textContent = text;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
 
-// 欢迎语
-addMsg('您好！我是心理健康辅助筛查助手。\n\n请简单描述一下您的情况，比如：最近的心情、睡眠情况、有哪些困扰等。', 'bot');
-
-function updateCollectedInfo(info) {
-  if (!info) return;
-  
-  const symptoms = info.symptoms && info.symptoms.length > 0 ? info.symptoms.join('、') : '-';
-  const duration = info.duration || '-';
-  const medicalHistory = info.medical_history || '-';
-  const medicationHistory = info.medication_history || '-';
-  
-  // 兼容两种格式：数字(旧) 和 对象(新)
-  let phq9Score = '-';
-  let gad7Score = '-';
-  if (info.scales) {
-    // PHQ9 处理
-    if (info.scales.PHQ9 !== undefined && info.scales.PHQ9 !== null) {
-      if (typeof info.scales.PHQ9 === 'object') {
-        phq9Score = `${info.scales.PHQ9.score || '-'} 分`;
-      } else if (typeof info.scales.PHQ9 === 'number') {
-        phq9Score = `${info.scales.PHQ9} 分`;
-      } else {
-        phq9Score = `${info.scales.PHQ9} 分`;
-      }
-    }
-    // GAD7 处理
-    if (info.scales.GAD7 !== undefined && info.scales.GAD7 !== null) {
-      if (typeof info.scales.GAD7 === 'object') {
-        gad7Score = `${info.scales.GAD7.score || '-'} 分`;
-      } else if (typeof info.scales.GAD7 === 'number') {
-        gad7Score = `${info.scales.GAD7} 分`;
-      } else {
-        gad7Score = `${info.scales.GAD7} 分`;
-      }
-    }
-  }
-  
-  document.getElementById('collectedInfo').innerHTML = `
-    <div class="collected-item"><span>症状</span><span>${symptoms}</span></div>
-    <div class="collected-item"><span>持续时间</span><span>${duration}</span></div>
-    <div class="collected-item"><span>既往史</span><span>${medicalHistory}</span></div>
-    <div class="collected-item"><span>用药史</span><span>${medicationHistory}</span></div>
-    <div class="collected-item"><span>PHQ-9 抑郁量表</span><span>${phq9Score}</span></div>
-    <div class="collected-item"><span>GAD-7 焦虑量表</span><span>${gad7Score}</span></div>
-  `;
-}
-
+// 更新状态显示
 function updateStatus(status) {
   const statusBox = document.getElementById('statusBox');
-  const modeBadge = document.getElementById('modeBadge');
+  statusBox.className = 'status status-' + status;
   
   switch(status) {
     case 'collecting':
-      statusBox.className = 'status status-collecting';
       statusBox.textContent = '📋 信息采集中';
-      modeBadge.className = 'mode-badge mode-guided';
-      modeBadge.textContent = '引导式评估';
       break;
     case 'diagnosing':
-      statusBox.className = 'status status-diagnosing';
-      statusBox.textContent = '🔍 诊断分析中...';
+      statusBox.textContent = '🔍 AI 诊断分析中...';
       break;
     case 'completed':
-      statusBox.className = 'status status-completed';
       statusBox.textContent = '✅ 评估完成';
       break;
   }
 }
 
+// 更新已收集信息
+function updateCollectedInfo(info) {
+  if (!info) return;
+  
+  const items = [];
+  
+  // 症状
+  if (info.symptoms && info.symptoms.length > 0) {
+    items.push(`<div class="collected-item"><span class="collected-label">症状</span><span class="collected-value">${info.symptoms.join('、')}</span></div>`);
+  }
+  
+  // 持续时间
+  if (info.duration) {
+    items.push(`<div class="collected-item"><span class="collected-label">持续时间</span><span class="collected-value">${info.duration}</span></div>`);
+  }
+  
+  // 既往史
+  if (info.medical_history) {
+    items.push(`<div class="collected-item"><span class="collected-label">既往史</span><span class="collected-value">${info.medical_history}</span></div>`);
+  }
+  
+  // 用药史
+  if (info.medication_history) {
+    items.push(`<div class="collected-item"><span class="collected-label">用药史</span><span class="collected-value">${info.medication_history}</span></div>`);
+  }
+  
+  // 量表分数
+  if (info.scales) {
+    if (info.scales.PHQ9) {
+      const phq9 = typeof info.scales.PHQ9 === 'object' ? info.scales.PHQ9.score : info.scales.PHQ9;
+      const phq9Class = phq9 >= 15 ? 'score-high' : phq9 >= 10 ? 'score-medium' : 'score-normal';
+      items.push(`<div class="collected-item"><span class="collected-label">PHQ-9 抑郁量表</span><span class="collected-value ${phq9Class}">${phq9} 分</span></div>`);
+    }
+    if (info.scales.GAD7) {
+      const gad7 = typeof info.scales.GAD7 === 'object' ? info.scales.GAD7.score : info.scales.GAD7;
+      const gad7Class = gad7 >= 10 ? 'score-high' : gad7 >= 5 ? 'score-medium' : 'score-normal';
+      items.push(`<div class="collected-item"><span class="collected-label">GAD-7 焦虑量表</span><span class="collected-value ${gad7Class}">${gad7} 分</span></div>`);
+    }
+  }
+  
+  if (items.length === 0) {
+    items.push(`<div class="collected-item"><span class="collected-label">状态</span><span class="collected-value">对话进行中...</span></div>`);
+  }
+  
+  document.getElementById('collectedInfo').innerHTML = items.join('');
+}
+
+// 发送消息
 async function sendMessage() {
   const btn = document.getElementById('send');
   const msg = document.getElementById('message').value.trim();
+  
   if (!msg || isDiagnosing) return;
   
   addMsg(msg, 'user');
-  history.push(msg);
+  chatHistory.push(msg);
   btn.disabled = true;
   document.getElementById('message').value = '';
   
-  const loadingMsg = document.createElement('div');
-  loadingMsg.className = 'msg bot';
-  loadingMsg.textContent = '...';
-  chat.appendChild(loadingMsg);
+  // 显示加载中
+  const loadingDiv = document.createElement('div');
+  loadingDiv.className = 'msg bot';
+  loadingDiv.textContent = '正在思考...';
+  document.getElementById('chat').appendChild(loadingDiv);
+  document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
   
   const body = {
-    session_id: document.getElementById('session').value || 'web-demo',
+    session_id: document.getElementById('session').value,
     message: msg,
     age: Number(document.getElementById('age').value || 0) || null,
     gender: document.getElementById('gender').value || null,
   };
   
   try {
-    const res = await fetch('/api/dialogue', { 
-      method: 'POST', 
-      headers: {'Content-Type':'application/json'}, 
-      body: JSON.stringify(body) 
+    const res = await fetch(`${API_BASE}/dialogue`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
+      },
+      body: JSON.stringify(body)
     });
     const data = await res.json();
     
+    // 移除加载提示
+    document.getElementById('chat').removeChild(loadingDiv);
+    
+    // 显示回复
+    addMsg(data.reply, 'bot');
+    chatHistory.push(data.reply);
+    
     // 更新状态
-    if (data.status === 'completed' || data.is_completed) {
+    if (data.status === 'diagnosing' || data.status === 'completed') {
+      updateStatus(data.status);
       isDiagnosing = true;
-      updateStatus('diagnosing');
+      
+      // 如果有诊断结果，直接显示
+      if (data.diagnosis_result) {
+        const result = data.diagnosis_result;
+        let reportMsg = '✅ 诊断完成！\n\n';
+        
+        const riskText = {
+          'high': '🔴 高风险',
+          'medium': '🟡 中风险',
+          'low': '🟢 低风险'
+        }[result.risk_level] || result.risk_level;
+        reportMsg += `风险等级：${riskText}\n\n`;
+        
+        if (result.suspected_diagnosis && result.suspected_diagnosis.length > 0) {
+          reportMsg += '📋 评估结果：\n';
+          result.suspected_diagnosis.forEach(d => reportMsg += `• ${d}\n`);
+          reportMsg += '\n';
+        }
+        
+        if (result.recommendations && result.recommendations.length > 0) {
+          reportMsg += '💡 建议：\n';
+          result.recommendations.forEach(r => reportMsg += `• ${r}\n`);
+        }
+        
+        reportMsg += '\n⚠️ 重要声明：本评估仅供筛查参考，不构成医学诊断。如有需要，请前往正规医院精神科/心理科就诊。';
+        
+        addMsg(reportMsg, 'bot');
+        document.getElementById('out').textContent = JSON.stringify(result, null, 2);
+      } else if (data.status === 'diagnosing') {
+        // 没有结果，启动轮询（只显示一次提示）
+        if (!document.querySelector('.diagnosing-shown')) {
+          const div = document.createElement('div');
+          div.className = 'diagnosing-shown';
+          div.style.display = 'none';
+          document.body.appendChild(div);
+          addMsg('🔍 正在通过多 Agent 系统进行综合分析，请稍候...', 'bot');
+        }
+        await waitForDiagnosis();
+      }
     } else {
       updateStatus('collecting');
     }
@@ -239,119 +373,175 @@ async function sendMessage() {
       updateStatus('completed');
     }
     
-    // 更新界面模式
-    if (data.mode === 'quick') {
-      document.getElementById('modeBadge').className = 'mode-badge mode-quick';
-      document.getElementById('modeBadge').textContent = '快速诊断模式';
-    }
-    
-    // 显示回复
-    chat.removeChild(loadingMsg);
-    addMsg(data.reply, 'bot');
-    history.push(data.reply || '');
-    
-    // ===== 关键优化：检测是否需要进入诊断等待 =====
-    // 条件1：后端明确标记 status === 'diagnosing'
-    // 条件2：回复中包含"综合分析"或"评估报告"
-    if ((data.status === 'diagnosing' || 
-        (data.reply && (data.reply.includes('综合分析') || data.reply.includes('评估报告')))) && 
-        !data.diagnosis_result) {
-      isDiagnosing = true;
-      updateStatus('diagnosing');
-      
-      // ===== 自动轮询，等待诊断结果 =====
-      let retryCount = 0;
-      const maxRetries = 15; // 最多等15次，每次1秒
-      
-      const checkDiagnosis = async () => {
-        try {
-          const checkRes = await fetch('/api/dialogue', { 
-            method: 'POST', 
-            headers: {'Content-Type':'application/json'}, 
-            body: JSON.stringify({
-              session_id: document.getElementById('session').value || 'web-demo',
-              message: '', // 空消息，触发诊断或获取结果
-            })
-          });
-          const checkData = await checkRes.json();
-          
-          if (checkData.diagnosis_result) {
-            // 诊断完成！
-            addMsg(checkData.reply, 'bot');
-            document.getElementById('out').textContent = JSON.stringify(checkData.diagnosis_result, null, 2);
-            updateStatus('completed');
-            updateCollectedInfo(checkData.collected_info);
-          } else if (retryCount < maxRetries) {
-            // 继续等待
-            retryCount++;
-            setTimeout(checkDiagnosis, 1000);
-          } else {
-            // 超时
-            addMsg('诊断超时，请刷新页面重试', 'bot');
-          }
-        } catch (err) {
-          if (retryCount < maxRetries) {
-            retryCount++;
-            setTimeout(checkDiagnosis, 1000);
-          } else {
-            addMsg('诊断过程出错：' + err.message, 'bot');
-          }
-        }
-      };
-      
-      // 开始轮询
-      setTimeout(checkDiagnosis, 1000);
-    }
-    
   } catch (e) {
-    chat.removeChild(loadingMsg);
+    if (document.getElementById('chat').contains(loadingDiv)) {
+      document.getElementById('chat').removeChild(loadingDiv);
+    }
     addMsg('请求失败：' + e.message, 'bot');
   } finally {
     btn.disabled = false;
   }
 }
 
-async function resetSession() {
-  const sessionId = document.getElementById('session').value || 'web-demo';
+// 等待诊断结果
+async function waitForDiagnosis() {
+  let retryCount = 0;
+  const maxRetries = 300; // 最多等300秒（5分钟）
   
-  try {
-    await fetch(`/api/session/${sessionId}`, { method: 'DELETE' });
-  } catch (e) {
-    console.error('Reset failed:', e);
-  }
+  const checkDiagnosis = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/dialogue`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
+        },
+        body: JSON.stringify({
+          session_id: document.getElementById('session').value,
+          message: '', // 空消息触发诊断或获取结果
+        })
+      });
+      const data = await res.json();
+      
+      if (data.diagnosis_result) {
+        // 诊断完成，显示报告
+        const result = data.diagnosis_result;
+        let reportMsg = '✅ 诊断完成！\n\n';
+        
+        // 显示风险等级
+        const riskText = {
+          'high': '🔴 高风险',
+          'medium': '🟡 中风险',
+          'low': '🟢 低风险'
+        }[result.risk_level] || result.risk_level;
+        reportMsg += `风险等级：${riskText}\n\n`;
+        
+        // 显示疑似诊断
+        if (result.suspected_diagnosis && result.suspected_diagnosis.length > 0) {
+          reportMsg += '📋 评估结果：\n';
+          result.suspected_diagnosis.forEach(d => reportMsg += `• ${d}\n`);
+          reportMsg += '\n';
+        }
+        
+        // 显示建议
+        if (result.recommendations && result.recommendations.length > 0) {
+          reportMsg += '💡 建议：\n';
+          result.recommendations.forEach(r => reportMsg += `• ${r}\n`);
+        }
+        
+        reportMsg += '\n⚠️ 重要声明：本评估仅供筛查参考，不构成医学诊断。如有需要，请前往正规医院精神科/心理科就诊。';
+        
+        addMsg(reportMsg, 'bot');
+        document.getElementById('out').textContent = JSON.stringify(result, null, 2);
+        updateCollectedInfo(data.collected_info);
+        updateStatus('completed');
+        isDiagnosing = true;
+      } else if (retryCount < maxRetries) {
+        retryCount++;
+        setTimeout(checkDiagnosis, 1000);
+      } else {
+        addMsg('诊断超时，请刷新页面重试', 'bot');
+      }
+    } catch (err) {
+      if (retryCount < maxRetries) {
+        retryCount++;
+        setTimeout(checkDiagnosis, 1000);
+      } else {
+        addMsg('诊断过程出错：' + err.message, 'bot');
+      }
+    }
+  };
   
-  history = [];
+  setTimeout(checkDiagnosis, 1000);
+}
+
+// 重置会话
+function resetSession() {
+  const newSessionId = 'web-demo-v2-' + Date.now();
+  document.getElementById('session').value = newSessionId;
+  currentSessionId = newSessionId;
+  localStorage.setItem('session_id', newSessionId);
+  
+  chatHistory = [];
   isDiagnosing = false;
   document.getElementById('message').value = '';
-  document.getElementById('message').disabled = false;
   document.getElementById('out').textContent = '等待信息收集完成...';
   
   // 清空聊天
-  chat.innerHTML = '';
+  document.getElementById('chat').innerHTML = '';
   
-  // 重置已收集信息显示
-  document.getElementById('collectedInfo').innerHTML = `
-    <div class="collected-item"><span>症状</span><span>-</span></div>
-    <div class="collected-item"><span>持续时间</span><span>-</span></div>
-    <div class="collected-item"><span>既往史</span><span>-</span></div>
-    <div class="collected-item"><span>用药史</span><span>-</span></div>
-    <div class="collected-item"><span>PHQ-9 抑郁量表</span><span>-</span></div>
-    <div class="collected-item"><span>GAD-7 焦虑量表</span><span>-</span></div>
-  `;
-  
+  // 重置收集信息显示
+  updateCollectedInfo(null);
   updateStatus('collecting');
   
-  // 重新显示欢迎语
-  addMsg('您好！我是心理健康辅助筛查助手。\n\n请简单描述一下您的情况，比如：最近的心情、睡眠情况、有哪些困扰等。', 'bot');
+  // 重置后重新显示引导语
+  const welcomeMsg = '你好！我是心理健康助手。愿意跟我说说你最近的心情怎么样？';
+  addMsg(welcomeMsg, 'bot');
+  chatHistory.push(welcomeMsg);
 }
 
-// 回车发送
-document.getElementById('message').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
+// 登录相关
+function showLoginModal() {
+  document.getElementById('loginModal').classList.add('show');
+}
+
+function closeLoginModal() {
+  document.getElementById('loginModal').classList.remove('show');
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUsername').value;
+  const password = document.getElementById('loginPassword').value;
+  
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      accessToken = data.access_token;
+      localStorage.setItem('access_token', accessToken);
+      document.getElementById('btnLogin').textContent = '✅ 已登录';
+      closeLoginModal();
+      addMsg('登录成功！您的诊断记录将与账号绑定。', 'bot');
+    } else {
+      const err = await res.json();
+      alert('登录失败：' + err.detail);
+    }
+  } catch (e) {
+    alert('登录失败：' + e.message);
   }
-});
+}
+
+async function doRegister() {
+  const username = document.getElementById('loginUsername').value;
+  const password = document.getElementById('loginPassword').value;
+  
+  try {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      accessToken = data.access_token;
+      localStorage.setItem('access_token', accessToken);
+      document.getElementById('btnLogin').textContent = '✅ 已登录';
+      closeLoginModal();
+      addMsg('注册并登录成功！', 'bot');
+    } else {
+      const err = await res.json();
+      alert('注册失败：' + err.detail);
+    }
+  } catch (e) {
+    alert('注册失败：' + e.message);
+  }
+}
 </script>
 </body>
 </html>

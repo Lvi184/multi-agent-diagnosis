@@ -1,6 +1,6 @@
-# MoodAngels-LangGraph-DeepSeek 多Agent精神疾病辅助筛查系统
+# Multi-Agent Diagnosis 多Agent精神疾病辅助筛查系统
 
-基于 MoodAngels 论文思想扩展的端到端多智能体精神疾病辅助诊断系统，完整集成 DeepSeek 大模型，支持 LangGraph 工作流编排。
+基于多Agent辩论框架的端到端精神疾病辅助诊断系统，完整集成 DeepSeek 大模型，支持 LangGraph 工作流编排。
 
 > ⚠️ **重要声明**：本项目仅用于科研、教学、课程设计、论文原型和辅助筛查演示，不构成医学确诊、治疗建议或替代医生判断。
 

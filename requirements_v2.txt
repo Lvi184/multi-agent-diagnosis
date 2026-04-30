@@ -1,0 +1,40 @@
+# ============================================
+# MoodAngels v2.0 依赖包
+# ============================================
+
+# ===== Web 框架 =====
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# ===== 数据库 ORM =====
+tortoise-orm>=0.20.0
+aerich>=0.7.0     # 数据库迁移工具
+aiosqlite>=0.19.0  # SQLite 异步驱动
+# asyncpg>=0.29.0  # PostgreSQL（生产环境需要时取消注释）
+
+# ===== 安全与认证 =====
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
+slowapi>=0.1.9
+
+# ===== AI 模型 =====
+openai>=1.0.0
+langchain>=0.0.350
+langgraph>=0.0.20
+
+# ===== 工具库 =====
+python-dotenv>=1.0.0
+loguru>=0.7.2
+requests>=2.31.0
+
+# ===== 数据处理 =====
+networkx>=3.2
+numpy>=1.24.0
+
+# ===== 开发工具（可选）=====
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# black>=23.11.0
+# ruff>=0.1.0
