@@ -125,9 +125,16 @@ class DSM5KnowledgeBase:
                 if idx not in self.disorder_index[tail]:
                     self.disorder_index[tail].append(idx)
 
-    def _translate_symptom(self, symptom: str) -> List[str]:
+    def _translate_symptom(self, symptom) -> List[str]:
         """将中文症状翻译为相关的英文关键词列表"""
-        symptom_lower = symptom.lower()
+        # 处理字典类型的症状（来自结构化输出）
+        if isinstance(symptom, dict):
+            symptom = str(symptom.get('name', '') or symptom.get('text', '') or '')
+        # 处理列表类型
+        if isinstance(symptom, list):
+            symptom = ' '.join(str(s) for s in symptom)
+        
+        symptom_lower = str(symptom).lower()
         keywords = []
 
         # 查找映射表
@@ -143,7 +150,7 @@ class DSM5KnowledgeBase:
         # 去重
         return list(set(keywords))
 
-    def search_by_symptoms(self, symptoms: List[str], top_k: int = 5) -> List[Dict[str, Any]]:
+    def search_by_symptoms(self, symptoms, top_k: int = 5) -> List[Dict[str, Any]]:
         """
         根据症状列表检索相关知识（支持中英文）
 
@@ -153,11 +160,26 @@ class DSM5KnowledgeBase:
         """
         if not symptoms:
             return []
+        
+        # 标准化为字符串列表
+        if isinstance(symptoms, str):
+            symptoms = [symptoms]
+        symptom_strings = []
+        for s in symptoms:
+            if isinstance(s, dict):
+                # 处理字典格式
+                symptom_str = str(s.get('name', '') or s.get('text', '') or s.get('symptom', ''))
+                if symptom_str:
+                    symptom_strings.append(symptom_str)
+            elif isinstance(s, str):
+                symptom_strings.append(s)
+            elif s is not None:
+                symptom_strings.append(str(s))
 
         matched_indices = {}  # idx -> 匹配次数（用于排序）
         matched_triples = {}
 
-        for symptom in symptoms:
+        for symptom in symptom_strings:
             # 获取英文关键词
             en_keywords = self._translate_symptom(symptom)
 

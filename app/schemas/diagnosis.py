@@ -41,4 +41,5 @@ class DiagnosisResponse(BaseModel):
 class ChatResponse(BaseModel):
     session_id: str
     reply: str
-    report: DiagnosisResponse
+    report: Optional[DiagnosisResponse] = None
+    intent: Optional[Dict[str, Any]] = None

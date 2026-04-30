@@ -134,29 +134,18 @@ function updateCollectedInfo(info) {
   const medicalHistory = info.medical_history || '-';
   const medicationHistory = info.medication_history || '-';
   
-  // 兼容两种格式：数字(旧) 和 对象(新)
   let phq9Score = '-';
   let gad7Score = '-';
   if (info.scales) {
-    // PHQ9 处理
-    if (info.scales.PHQ9 !== undefined && info.scales.PHQ9 !== null) {
-      if (typeof info.scales.PHQ9 === 'object') {
-        phq9Score = `${info.scales.PHQ9.score || '-'} 分`;
-      } else if (typeof info.scales.PHQ9 === 'number') {
-        phq9Score = `${info.scales.PHQ9} 分`;
-      } else {
-        phq9Score = `${info.scales.PHQ9} 分`;
-      }
+    if (info.scales.PHQ9) {
+      phq9Score = typeof info.scales.PHQ9 === 'object' 
+        ? `${info.scales.PHQ9.score || '-'} 分` 
+        : `${info.scales.PHQ9} 分`;
     }
-    // GAD7 处理
-    if (info.scales.GAD7 !== undefined && info.scales.GAD7 !== null) {
-      if (typeof info.scales.GAD7 === 'object') {
-        gad7Score = `${info.scales.GAD7.score || '-'} 分`;
-      } else if (typeof info.scales.GAD7 === 'number') {
-        gad7Score = `${info.scales.GAD7} 分`;
-      } else {
-        gad7Score = `${info.scales.GAD7} 分`;
-      }
+    if (info.scales.GAD7) {
+      gad7Score = typeof info.scales.GAD7 === 'object' 
+        ? `${info.scales.GAD7.score || '-'} 分` 
+        : `${info.scales.GAD7} 分`;
     }
   }
   
@@ -225,6 +214,7 @@ async function sendMessage() {
     // 更新状态
     if (data.status === 'completed' || data.is_completed) {
       isDiagnosing = true;
+      updateStatus('completed');
       updateStatus('diagnosing');
     } else {
       updateStatus('collecting');
@@ -249,59 +239,6 @@ async function sendMessage() {
     chat.removeChild(loadingMsg);
     addMsg(data.reply, 'bot');
     history.push(data.reply || '');
-    
-    // ===== 关键优化：检测是否需要进入诊断等待 =====
-    // 条件1：后端明确标记 status === 'diagnosing'
-    // 条件2：回复中包含"综合分析"或"评估报告"
-    if ((data.status === 'diagnosing' || 
-        (data.reply && (data.reply.includes('综合分析') || data.reply.includes('评估报告')))) && 
-        !data.diagnosis_result) {
-      isDiagnosing = true;
-      updateStatus('diagnosing');
-      
-      // ===== 自动轮询，等待诊断结果 =====
-      let retryCount = 0;
-      const maxRetries = 15; // 最多等15次，每次1秒
-      
-      const checkDiagnosis = async () => {
-        try {
-          const checkRes = await fetch('/api/dialogue', { 
-            method: 'POST', 
-            headers: {'Content-Type':'application/json'}, 
-            body: JSON.stringify({
-              session_id: document.getElementById('session').value || 'web-demo',
-              message: '', // 空消息，触发诊断或获取结果
-            })
-          });
-          const checkData = await checkRes.json();
-          
-          if (checkData.diagnosis_result) {
-            // 诊断完成！
-            addMsg(checkData.reply, 'bot');
-            document.getElementById('out').textContent = JSON.stringify(checkData.diagnosis_result, null, 2);
-            updateStatus('completed');
-            updateCollectedInfo(checkData.collected_info);
-          } else if (retryCount < maxRetries) {
-            // 继续等待
-            retryCount++;
-            setTimeout(checkDiagnosis, 1000);
-          } else {
-            // 超时
-            addMsg('诊断超时，请刷新页面重试', 'bot');
-          }
-        } catch (err) {
-          if (retryCount < maxRetries) {
-            retryCount++;
-            setTimeout(checkDiagnosis, 1000);
-          } else {
-            addMsg('诊断过程出错：' + err.message, 'bot');
-          }
-        }
-      };
-      
-      // 开始轮询
-      setTimeout(checkDiagnosis, 1000);
-    }
     
   } catch (e) {
     chat.removeChild(loadingMsg);
